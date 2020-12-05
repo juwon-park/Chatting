@@ -20,10 +20,7 @@ public class UI extends JFrame {
 
 	private JTabbedPane tabbedPane;
 	private JTabbedPane tabbedPane2;
-	
-	private JPanel connectPane;
-	private JPanel chattingPane;
-	
+		
 	private JTextField txtSend;
 	private JTextArea txtArea;
 	
@@ -37,15 +34,13 @@ public class UI extends JFrame {
 	private JTextField txtIpAddr;
 	private JTextField txtPortNum;
 
-	private Thread sendthread;	
 	private String nickname;
-	private Socket socket;
-	private JLabel lblNickname_1;
-	
+	private JLabel lblmyNickname;
 
-	/**
-	 * Launch the application.
-	 */
+	private Thread sendthread;
+	private Socket socket;
+	
+	/**	Launch the application. */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -59,9 +54,7 @@ public class UI extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
+	/** Create the frame. */
 	public UI() {
 		setTitle("CHAT");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,17 +64,13 @@ public class UI extends JFrame {
 		tabbedPane.setBorder(new EmptyBorder(-25, 0, 0, 0));
 		setContentPane(tabbedPane);
 
-		initConnectPane();
-		initChattingPane();
-
-		tabbedPane.addTab("connectPane",connectPane);
-		tabbedPane.addTab("chattingPane",chattingPane);		
+		initConnectPane(); 		//연결 요청 패널 컴포넌트들 초기화
+		initChattingPane();		//채팅 패널 컴포넌트들 초기화	
 	}
 
-	//연결 요청 패널
 	void initConnectPane()
 	{	
-		connectPane = new JPanel();
+		JPanel connectPane = new JPanel();
 		connectPane.setBackground(Color.WHITE);
 		connectPane.setBorder(new EmptyBorder(80, 30, 50, 30));
 		connectPane.setLayout(new BorderLayout(0, 0));		
@@ -137,13 +126,28 @@ public class UI extends JFrame {
 		
 		connectPane.add(tabbedPane2, BorderLayout.CENTER);	
 		
+		JPanel btnPanel = new JPanel();
+		btnPanel.setBackground(Color.WHITE);
+		connectPane.add(btnPanel, BorderLayout.SOUTH);
+		btnPanel.setLayout(new GridLayout(0, 2, 15, 20));
+		
+		JButton btnQuit = new JButton("Quit");
+		btnQuit.setForeground(new Color(255, 99, 71));
+		btnQuit.setFont(new Font("넥슨 풋볼고딕 L", Font.PLAIN, 15));
+		btnQuit.setBackground(Color.WHITE);
+		btnPanel.add(btnQuit);
+		
 		JButton btnConnect = new JButton("Connect");
-		connectPane.add(btnConnect, BorderLayout.SOUTH);
 		btnConnect.setBackground(Color.WHITE);
 		btnConnect.setFont(new Font("넥슨 풋볼고딕 L", Font.PLAIN, 15));
+		btnPanel.add(btnConnect);
 		
-		btnConnect.addActionListener(new ConnectActionListener());
-				
+		btnQuit.addActionListener(new QuitActionListener());		//프로그램 종료 이벤트리스너 추가
+		btnConnect.addActionListener(new ConnectActionListener());	//프로그램 연결 이벤트리스너 추가
+		
+		tabbedPane.addTab("connectPane",connectPane);
+	
+		//임시
 		txtNickname.setText("서버");		
 		txtPortNumMy.setText("9000");
 		txtNickName2.setText("클라");
@@ -151,10 +155,9 @@ public class UI extends JFrame {
 		txtPortNum.setText("9000");
 	}
 
-	//채팅 패널
 	void initChattingPane() 
 	{
-		chattingPane = new JPanel();
+		JPanel chattingPane = new JPanel();
 		chattingPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		chattingPane.setLayout(new BorderLayout(0, 0));
 
@@ -165,10 +168,10 @@ public class UI extends JFrame {
 		noticePanel.setLayout(new BorderLayout(0, 0));
 		chattingPane.add(noticePanel, BorderLayout.NORTH);
 		
-		lblNickname_1 = new JLabel();
-		lblNickname_1.setForeground(SystemColor.activeCaption);
-		lblNickname_1.setFont(new Font("나눔바른고딕", Font.PLAIN, 15));
-		noticePanel.add(lblNickname_1, BorderLayout.CENTER);
+		lblmyNickname = new JLabel();
+		lblmyNickname.setForeground(SystemColor.activeCaption);
+		lblmyNickname.setFont(new Font("나눔바른고딕", Font.PLAIN, 15));
+		noticePanel.add(lblmyNickname, BorderLayout.CENTER);
 
 		//채팅방 나가기 버튼
 		btnExit = new JButton("나가기");	
@@ -206,8 +209,10 @@ public class UI extends JFrame {
 		txtSend.addKeyListener(new SendkeyListener());			//전송 버튼 활성화/비활성화 키리스너 추가
 		btnSend.addActionListener(new SendActionListener());	//전송 이벤트리스너 추가 
 		btnExit.addActionListener(new ExitActionListener());    //채팅 나가기 이벤트리스너 추가
-	}
+	
+		tabbedPane.addTab("chattingPane",chattingPane);		
 
+	}
 	 
 	//연결 버튼
 	class ConnectActionListener implements ActionListener
@@ -240,7 +245,7 @@ public class UI extends JFrame {
 				}
 			}
 			
-			lblNickname_1.setText(" 나의 닉네임 : " + nickname);
+			lblmyNickname.setText(" 나의 닉네임 : " + nickname);
 		}
 	}	
 
@@ -389,8 +394,7 @@ public class UI extends JFrame {
 		}
 	}
 	
-	
-	//전송 버튼, 입력 텍스트 필드- 엔터 리스너  
+	//전송 버튼, 입력 텍스트 필드-엔터   
 	class SendActionListener implements ActionListener
 	{
 		@Override
@@ -402,8 +406,7 @@ public class UI extends JFrame {
 		}					
 	}   	
 
-	
-	//전송 버튼 활성화/비활성화 
+	//전송 버튼 활성화 / 비활성화 
 	class SendkeyListener implements KeyListener
 	{ 		
 		@Override
@@ -420,30 +423,53 @@ public class UI extends JFrame {
 		public void keyTyped(KeyEvent e){}     
 	} 
 
-	//나가기 버튼
+	//채팅창 나가기 버튼
 	class ExitActionListener implements ActionListener
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{					
 			
-			Thread sendthread = new SenderThread(socket, "disconnect");
-			sendthread.run();
-			
-			tabbedPane.setSelectedIndex(0);			
-			txtArea.setText("");
-			txtSend.setText("");
-			
-			try 
+			int result = JOptionPane.showConfirmDialog(null,"정말 채팅을 종료하시겠습니까?.\n","Exit",JOptionPane.OK_CANCEL_OPTION );
+
+			if(result == JOptionPane.YES_OPTION) //채팅 종료
 			{
-				socket.close();
-			} 
-			catch (Exception ignored) 
-			{
+				Thread sendthread = new SenderThread(socket, "disconnect");
+				sendthread.run();
 				
-			}			
+				tabbedPane.setSelectedIndex(0);			
+				txtArea.setText("");
+				txtSend.setText("");
+				
+				try 
+				{
+					socket.close();
+				} 
+				catch (Exception ignored) 
+				{
+					
+				}			
+			}			 				
+			else //취소하거나 창을 닫으면 무시
+				return;					
 		}
 	}
 
+	//프로그램 종료 버튼
+	class QuitActionListener implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{		
+			int result = JOptionPane.showConfirmDialog(null,"정말 프로그램을 종료하시겠습니까?.\n","Quit",JOptionPane.OK_CANCEL_OPTION );
+
+			if(result == JOptionPane.YES_OPTION) //프로그램 종료
+				System.exit(0);		 				
+			else //취소하거나 창을 닫으면 무시
+				return;		
+
+			
+		}
+	}
 
 }
